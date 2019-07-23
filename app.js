@@ -34,9 +34,13 @@ const time = "01 12 * * 2";
 
 cron.schedule(
   time,
-  () => {
+  async () => {
     console.log("🐣 Running the cron!");
-    fetchAndSave();
+    try {
+      await fetchAndSave();
+    } catch (err) {
+      console.log(err.message);
+    }
   },
   {
     timezone: "America/Argentina/Buenos_Aires"

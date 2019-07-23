@@ -1,21 +1,15 @@
 [
   {
-    "nombre": "Julio Le Parc. Un visionario",
-    "href": "http://www.cck.gob.ar/eventos/julio-le-parc-un-visionario_3387",
-    "fecha": "Martes 23 de julio - CCK",
-    "entrada": ""
+    "nombre": "Piso Nueve, cocina argentina",
+    "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
+    "fecha": "Martes 23 de julio - Noveno piso",
+    "entrada": "Gratis"
   },
   {
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Martes 23 de julio - Noveno piso",
-    "entrada": "Paga"
-  },
-  {
-    "nombre": "Piso Nueve, cocina argentina",
-    "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
-    "fecha": "Martes 23 de julio - Noveno piso",
-    "entrada": "Paga"
+    "entrada": "Gratis"
   },
   {
     "nombre": "Daniel Barenboim interpreta sonatas de Beethoven",
@@ -111,7 +105,7 @@
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Viernes 26 de julio - Noveno piso",
-    "entrada": "Paga"
+    "entrada": "Gratis"
   },
   {
     "nombre": "Piso Nueve, cocina argentina",
@@ -141,7 +135,7 @@
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Sábado 27 de julio - Noveno piso",
-    "entrada": "Paga"
+    "entrada": "Gratis"
   },
   {
     "nombre": "Piso Nueve, cocina argentina",
@@ -177,7 +171,7 @@
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Domingo 28 de julio - Noveno piso",
-    "entrada": "Paga"
+    "entrada": "Gratis"
   },
   {
     "nombre": "Piso Nueve, cocina argentina",
@@ -213,13 +207,13 @@
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Martes 30 de julio - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Martes 30 de julio - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Festival Barenboim: encuentros de reflexión",
@@ -231,13 +225,13 @@
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Martes 30 de julio - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Miércoles 31 de julio - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Festival Barenboim: encuentros de reflexión",
@@ -249,7 +243,7 @@
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Miércoles 31 de julio - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Daniel Barenboim dirige a la West-Eastern Divan Orchestra",
@@ -261,37 +255,37 @@
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Miércoles 31 de julio - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Jueves 1 de agosto - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Jueves 1 de agosto - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Jueves 1 de agosto - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Viernes 2 de agosto - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Viernes 2 de agosto - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Recital de Rolando Villazón y Daniel Barenboim",
@@ -303,7 +297,7 @@
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Viernes 2 de agosto - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Festival Barenboim: encuentros de reflexión",
@@ -315,19 +309,19 @@
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Sábado 3 de agosto - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Sábado 3 de agosto - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Sábado 3 de agosto - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Martha Argerich con Daniel Barenboim y la West-Eastern Divan Orchestra",
@@ -339,19 +333,19 @@
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Domingo 4 de agosto - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Domingo 4 de agosto - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Piso Nueve, cocina argentina",
     "href": "http://www.cck.gob.ar/eventos/piso-nueve-cocina-argentina_3326",
     "fecha": "Domingo 4 de agosto - Noveno piso",
-    "entrada": "Gratis"
+    "entrada": "Paga"
   },
   {
     "nombre": "Martha Argerich con Daniel Barenboim y la West-Eastern Divan Orchestra",
