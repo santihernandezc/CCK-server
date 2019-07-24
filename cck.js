@@ -1,5 +1,5 @@
 const puppeteer = require("puppeteer");
-const fs = require("fs");
+const db = require("./config/db");
 
 let browser = null;
 let page = null;
@@ -10,7 +10,7 @@ const cck = {
   init: async () => {
     try {
       console.log("🐣 Iniciando...");
-      browser = await puppeteer.launch({ headless: false });
+      browser = await puppeteer.launch({ headless: true });
       page = await browser.newPage();
       await page.setViewport({
         width: 1639,
@@ -34,7 +34,7 @@ const cck = {
     }
   },
 
-  fetchEventos: async () => {
+  scrapeEventos: async () => {
     try {
       console.log("🐣 Cargando...");
 
@@ -54,6 +54,9 @@ const cck = {
             ? box.querySelector(".art-desc > span").innerText
             : "";
           let entradaEstado = box.querySelector(".event-reservar");
+          let imagen = box
+            .querySelector(".art-img > a > img")
+            .getAttribute("src");
           let href = link.href;
           let nombre = link.innerText;
           let gratis = null;
@@ -61,14 +64,14 @@ const cck = {
           let proximamente = null;
           let entrada = "";
           if (entradaEstado) {
-            if (!/Comprar/.test(entradaEstado.innerText)) {
-              entrada = "Gratis";
-            } else if (/Agotadas/.test(entradaEstado.innerText)) {
-              entrada = "Agotada";
+            if (/Comprar/.test(entradaEstado.innerText)) {
+              entrada = "Paga";
+            } else if (/agotadas/.test(entradaEstado.innerText)) {
+              entrada = "Agotadas";
             } else if (/Proximamente/.test(entradaEstado.innerText)) {
               entrada = "Proximamente";
             } else {
-              entrada = "Paga";
+              entrada = "Gratis";
             }
           }
 
@@ -76,7 +79,8 @@ const cck = {
             nombre,
             href,
             fecha,
-            entrada
+            entrada,
+            imagen
           });
         }
         return arrEventos;
@@ -92,11 +96,19 @@ const cck = {
     try {
       console.log("🐣 Guarrrrdando...");
 
-      await fs.writeFileSync("./eventos.json", JSON.stringify(eventos));
+      await db.ref("/cck").set({
+        eventos,
+        lastUpdate: new Date().getTime()
+      });
       console.log("🍻 Eventos guardados!");
     } catch (err) {
       console.log("💩 ERROR!", err.message);
     }
+  },
+
+  fetchEventos: async () => {
+    let datos = await db.ref("cck/eventos").once("value");
+    return datos.val();
   },
 
   cerrar: async () => {

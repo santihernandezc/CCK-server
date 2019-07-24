@@ -3,7 +3,6 @@ const cron = require("node-cron");
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
-const path = require("path");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 
@@ -16,19 +15,29 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "eventos.json"));
+app.get("/", async (req, res) => {
+  let eventos = await cck.fetchEventos();
+  res.json(eventos);
 });
 
-const fetchAndSave = async () => {
+// app.get('/reservar', (req, res) => {
+//   res.send("<h1>Reservar</h1>")
+//   console.log('reservar')
+// })
+// app.get('/reservar/:id', (req, res) => {
+//   res.send("<h1>Reservar "+req.params.id+"</h1>")
+//   console.log(req.params.id)
+// })
+
+const scrapeAndSave = async () => {
   let eventos = [];
   await cck.init();
-  eventos = await cck.fetchEventos();
+  eventos = await cck.scrapeEventos();
   cck.guardarEventos(eventos);
   cck.cerrar();
 };
 
-// fetchAndSave();
+scrapeAndSave();
 
 const time = "01 12 * * 2";
 
@@ -37,7 +46,7 @@ cron.schedule(
   async () => {
     console.log("🐣 Running the cron!");
     try {
-      await fetchAndSave();
+      await scrapeAndSave();
     } catch (err) {
       console.log(err.message);
     }
@@ -47,4 +56,6 @@ cron.schedule(
   }
 );
 
-app.listen(process.env.PORT || 5000);
+const port = process.env.PORT || 5000;
+
+app.listen(port, () => console.log("Listening on port", port));

@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "^4.17.1",
+    "firebase": "^6.3.1",
     "node-cron": "^2.0.3",
     "puppeteer": "^1.18.1"
   }
