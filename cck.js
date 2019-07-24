@@ -68,8 +68,8 @@ const cck = {
               entrada = "Paga";
             } else if (/agotadas/.test(entradaEstado.innerText)) {
               entrada = "Agotadas";
-            } else if (/Proximamente/.test(entradaEstado.innerText)) {
-              entrada = "Proximamente";
+            } else if (/Próximamente/.test(entradaEstado.innerText)) {
+              entrada = "Próximamente";
             } else {
               entrada = "Gratis";
             }
@@ -80,7 +80,8 @@ const cck = {
             href,
             fecha,
             entrada,
-            imagen
+            imagen,
+            reservado: false
           });
         }
         return arrEventos;
@@ -96,7 +97,7 @@ const cck = {
     try {
       console.log("🐣 Guarrrrdando...");
 
-      await db.ref("/cck").set({
+      await db.ref("/cck/dataEventos").set({
         eventos,
         lastUpdate: new Date().getTime()
       });
@@ -107,8 +108,56 @@ const cck = {
   },
 
   fetchEventos: async () => {
-    let datos = await db.ref("cck/eventos").once("value");
+    let datos = await db.ref("cck/dataEventos/eventos").once("value");
     return datos.val();
+  },
+
+  fetchEvento: async id => {
+    let datos = await db.ref(`cck/dataEventos/eventos/${id}`).once("value");
+    return datos.val();
+  },
+
+  guardarReserva: async evento => {
+    console.log("🐣 Guarrrrdando...");
+    try {
+      await db.ref("/cck/reservasPendientes").push({ ...evento });
+      console.log("🍻 Reserva guardada!");
+      console.log("🐣 Fetcheando...");
+      let datos = await db
+        .ref(`cck/dataEventos/eventos/${evento.id}`)
+        .once("value");
+      let eventoAUpdatear = datos.val();
+      console.log("🐣 Updateando...");
+      let updates = {};
+      updates["/eventos/" + evento.id] = {
+        ...eventoAUpdatear,
+        reservado: true
+      };
+      await db.ref("/cck/dataEventos").update(updates);
+      console.log("🍻 Updateado!");
+      return {
+        guardado: true,
+        evento
+      };
+    } catch (err) {
+      console.log("💩 ERROR!", err.message);
+      return {
+        guardado: false,
+        evento
+      };
+    }
+  },
+
+  fetchReservasPendientes: async () => {
+    let reservasPendientes = await db
+      .ref("cck/reservasPendientes")
+      .once("value");
+    return reservasPendientes.val();
+  },
+
+  reservarEntradas: async () => {
+    let reservasPendientes = this.fetchReservasPendientes();
+    console.log(reservasPendientes);
   },
 
   cerrar: async () => {

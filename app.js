@@ -4,7 +4,48 @@ const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
 
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(
+  bodyParser.urlencoded({
+    extended: false
+  })
+);
+app.use(express.json());
+
+const scrapeAndSave = async () => {
+  let eventos = [];
+  await cck.init();
+  eventos = await cck.scrapeEventos();
+  cck.guardarEventos(eventos);
+  cck.cerrar();
+};
+const syncReservasYEventos = async () => {
+  console.log("🐣 Fetcheando reservas...");
+  let reservas = await cck.fetchReservasPendientes();
+  console.log("🐣 Fetcheando eventos...");
+  let eventos = await cck.fetchEventos();
+  console.log("🐣 Procesando...");
+  let keys = Object.keys(reservas);
+  let arrReservas = [];
+  for (let key of keys) {
+    arrReservas.push(reservas[key]);
+  }
+  keys = Object.keys(eventos);
+  let arrEventos = [];
+  for (let key of keys) {
+    arrEventos.push(eventos[key]);
+  }
+  let nuevoArrEventos = [];
+  for (let reserva of arrReservas) {
+    nuevoArrEventos = arrEventos.map(evento => {
+      if (reserva.nombre === evento.nombre && reserva.fecha === evento.fecha) {
+        return { ...evento, reservado: true };
+      }
+      return evento;
+    });
+  }
+  console.log("🐣 Guarrrrdando...");
+  cck.guardarEventos(nuevoArrEventos);
+};
 
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
@@ -20,26 +61,17 @@ app.get("/", async (req, res) => {
   res.json(eventos);
 });
 
-// app.get('/reservar', (req, res) => {
-//   res.send("<h1>Reservar</h1>")
-//   console.log('reservar')
-// })
-// app.get('/reservar/:id', (req, res) => {
-//   res.send("<h1>Reservar "+req.params.id+"</h1>")
-//   console.log(req.params.id)
-// })
+app.post("/", async (req, res) => {
+  let evento = req.body;
+  console.log(evento);
+  let result = await cck.guardarReserva(evento);
+  res.json(result);
+});
 
-const scrapeAndSave = async () => {
-  let eventos = [];
-  await cck.init();
-  eventos = await cck.scrapeEventos();
-  cck.guardarEventos(eventos);
-  cck.cerrar();
-};
+// scrapeAndSave();
+// syncReservasYEventos();
 
-scrapeAndSave();
-
-const time = "01 12 * * 2";
+const time = "01 12 * * 3";
 
 cron.schedule(
   time,
