@@ -15,7 +15,14 @@ const cck = {
       console.log("🐣 Iniciando...");
       browser = await puppeteer.launch({
         headless: false,
-        args: ["--no-sandbox", "--disable-setuid-sandbox"]
+        args: [
+          "--no-sandbox",
+          "--disable-setuid-sandbox",
+          "--disable-gpu",
+          "--disable-dev-shm-usage",
+          '--proxy-server="direct://"',
+          "--proxy-bypass-list=*"
+        ]
       });
       page = await browser.newPage();
       await page.setViewport({
