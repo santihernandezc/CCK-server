@@ -8,10 +8,12 @@ const arrRequests = ["image", "stylesheet", "font"];
 const url = "http://www.cck.gob.ar/reservas";
 
 const cck = {
+  //  SCRAPING  //
+
   async init() {
     try {
       console.log("🐣 Iniciando...");
-      browser = await puppeteer.launch({ headless: true });
+      browser = await puppeteer.launch({ headless: false });
       page = await browser.newPage();
       await page.setViewport({
         width: 1639,
@@ -38,7 +40,7 @@ const cck = {
     }
   },
 
-  // Scrapear
+  // Scrapear eventos
   async scrapeEventos() {
     try {
       await page.waitForSelector("#list-reservas > article");
@@ -92,6 +94,43 @@ const cck = {
     }
   },
 
+  async encontrarLinkEvento(evento) {
+    try {
+      await page.waitForSelector("#list-reservas > article");
+      console.log("✅ Página cargada.");
+      let link = await page.evaluate(({ nombre, fecha }) => {
+        let boxes = Array.from(
+          document.querySelectorAll("#list-reservas > article")
+        );
+
+        let matchedEvent = boxes.filter(
+          box =>
+            box.querySelector(".art-desc h3 a").innerText === nombre &&
+            box.querySelector(".art-desc > span").innerText === fecha
+        );
+        let link = matchedEvent[0]
+          .querySelector(".event-reservar a")
+          .getAttribute("href");
+        return link;
+      }, evento);
+      await page.goto(link);
+      console.log("🐣 Cargando...");
+    } catch (err) {
+      console.log("💩 ERROR!", err.message);
+    }
+  },
+
+  async cerrar() {
+    try {
+      browser.close();
+    } catch (err) {
+      console.log("💩 ERROR!", err.message);
+    }
+  },
+
+  // DB
+
+  //Eventos
   async guardarEventos(eventos) {
     try {
       console.log("🐣 Guarrrrdando...");
@@ -116,10 +155,12 @@ const cck = {
     return datos.val();
   },
 
+  //Reservas
+
   async guardarReserva(evento) {
     console.log("🐣 Guarrrrdando...");
     try {
-      await db.ref("/cck/reservasPendientes").push({ ...evento });
+      await db.ref("/cck/reservas/pendientes").push({ ...evento });
       console.log("🍻 Reserva guardada!");
       console.log("🐣 Fetcheando...");
       let datos = await db
@@ -149,9 +190,15 @@ const cck = {
 
   async fetchReservasPendientes() {
     let reservasPendientes = await db
-      .ref("cck/reservasPendientes")
+      .ref("cck/reservas/pendientes")
       .once("value");
     return reservasPendientes.val();
+  },
+  async fetchReservaPendiente(id) {
+    let reservaPendiente = await db
+      .ref(`/cck/reservas/pendientes/${id}`)
+      .once("value");
+    return reservaPendiente.val();
   },
 
   async reservarEntradasAgendadas() {
@@ -167,8 +214,10 @@ const cck = {
         for (let evento of arrEventos) {
           await this.init();
           await this.reservarEntrada(evento);
-          console.log("🐣 Removiendo evento...");
-          await db.ref(`/cck/reservasPendientes/${evento.id}`).remove();
+          console.log("🐣 Removiendo evento pendiente...");
+          let reserva = await this.fetchReservaPendiente(evento.id);
+          await db.ref("/cck/reservas/reservadas").push({ ...reserva });
+          await await db.ref(`/cck/reservas/pendientes/${evento.id}`).remove();
           console.log("✅ Evento removido.");
           await this.cerrar();
         }
@@ -215,40 +264,6 @@ const cck = {
       return {
         success: false
       };
-    }
-  },
-
-  async encontrarLinkEvento(evento) {
-    try {
-      await page.waitForSelector("#list-reservas > article");
-      console.log("✅ Página cargada.");
-      let link = await page.evaluate(({ nombre, fecha }) => {
-        let boxes = Array.from(
-          document.querySelectorAll("#list-reservas > article")
-        );
-
-        let matchedEvent = boxes.filter(
-          box =>
-            box.querySelector(".art-desc h3 a").innerText === nombre &&
-            box.querySelector(".art-desc > span").innerText === fecha
-        );
-        let link = matchedEvent[0]
-          .querySelector(".event-reservar a")
-          .getAttribute("href");
-        return link;
-      }, evento);
-      await page.goto(link);
-      console.log("🐣 Cargando...");
-    } catch (err) {
-      console.log("💩 ERROR!", err.message);
-    }
-  },
-
-  async cerrar() {
-    try {
-      browser.close();
-    } catch (err) {
-      console.log("💩 ERROR!", err.message);
     }
   }
 };

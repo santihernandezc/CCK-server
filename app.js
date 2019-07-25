@@ -87,42 +87,45 @@ app.post("/comprar", (req, res) => {
 });
 
 // Manual
+
 // scrapeAndSave();
 // syncReservasYEventos();
 // cck.reservarEntradasAgendadas();
 
-const mainTime = "01 12 * * 2-4";
+// CRON!
 
-cron.schedule(
-  mainTime,
-  async () => {
-    console.log("🐣 Reservas!");
-    try {
-      await cck.reservarEntradasAgendadas();
-    } catch (err) {
-      console.log("💩 ERROR!", err.message);
-    }
-  },
-  {
-    timezone: "America/Argentina/Buenos_Aires"
-  }
-);
-let scrapeTime = "1 12 * * *";
+// const mainTime = "01 12 * * 2-4";
 
-cron.schedule(
-  scrapeTime,
-  async () => {
-    console.log("🐣 Scrappin' time!");
-    try {
-      await scrapeAndSave();
-    } catch (err) {
-      console.log("💩 ERROR!", err.message);
-    }
-  },
-  {
-    timezone: "America/Argentina/Buenos_Aires"
-  }
-);
+// cron.schedule(
+//   mainTime,
+//   async () => {
+//     console.log("🐣 Reservas!");
+//     try {
+//       await cck.reservarEntradasAgendadas();
+//     } catch (err) {
+//       console.log("💩 ERROR!", err.message);
+//     }
+//   },
+//   {
+//     timezone: "America/Argentina/Buenos_Aires"
+//   }
+// );
+// let scrapeTime = "1 12 * * *";
+
+// cron.schedule(
+//   scrapeTime,
+//   async () => {
+//     console.log("🐣 Scrappin' time!");
+//     try {
+//       await scrapeAndSave();
+//     } catch (err) {
+//       console.log("💩 ERROR!", err.message);
+//     }
+//   },
+//   {
+//     timezone: "America/Argentina/Buenos_Aires"
+//   }
+// );
 
 const port = process.env.PORT || 5000;
 
