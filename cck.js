@@ -13,7 +13,10 @@ const cck = {
   async init() {
     try {
       console.log("🐣 Iniciando...");
-      browser = await puppeteer.launch({ headless: false });
+      browser = await puppeteer.launch({
+        headless: false,
+        args: ["--no-sandbox"]
+      });
       page = await browser.newPage();
       await page.setViewport({
         width: 1639,
