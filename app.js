@@ -88,7 +88,7 @@ app.post("/comprar", (req, res) => {
 
 // Manual
 
-// scrapeAndSave();
+scrapeAndSave();
 // syncReservasYEventos();
 // cck.reservarEntradasAgendadas();
 
@@ -110,7 +110,7 @@ cron.schedule(
     timezone: "America/Argentina/Buenos_Aires"
   }
 );
-let scrapeTime = "20 13 * * *";
+let scrapeTime = "05 12 * * *";
 
 cron.schedule(
   scrapeTime,
