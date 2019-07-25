@@ -14,8 +14,8 @@ const cck = {
     try {
       console.log("🐣 Iniciando...");
       browser = await puppeteer.launch({
-        headless: false,
         args: [
+          "--headless",
           "--no-sandbox",
           "--disable-setuid-sandbox",
           "--disable-gpu",
