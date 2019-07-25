@@ -1,5 +1,6 @@
 const puppeteer = require("puppeteer");
 const db = require("./config/db");
+const config = require("./config/config");
 
 let browser = null;
 let page = null;
@@ -7,7 +8,7 @@ const arrRequests = ["image", "stylesheet", "font"];
 const url = "http://www.cck.gob.ar/reservas";
 
 const cck = {
-  init: async () => {
+  async init() {
     try {
       console.log("🐣 Iniciando...");
       browser = await puppeteer.launch({ headless: true });
@@ -20,7 +21,7 @@ const cck = {
       page.setUserAgent(
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36"
       );
-
+      // Más rápido
       await page.setRequestInterception(true);
       page.on("request", request => {
         if (arrRequests.includes(request.resourceType())) request.abort();
@@ -29,16 +30,17 @@ const cck = {
         }
       });
       console.log("✅ Iniciado.");
+
+      console.log("🐣 Cargando...");
+      await page.goto(url);
     } catch (err) {
       console.log("💩 ERROR!", err.message);
     }
   },
 
-  scrapeEventos: async () => {
+  // Scrapear
+  async scrapeEventos() {
     try {
-      console.log("🐣 Cargando...");
-
-      await page.goto(url);
       await page.waitForSelector("#list-reservas > article");
       console.log("✅ Página cargada.");
 
@@ -59,9 +61,6 @@ const cck = {
             .getAttribute("src");
           let href = link.href;
           let nombre = link.innerText;
-          let gratis = null;
-          let agotado = null;
-          let proximamente = null;
           let entrada = "";
           if (entradaEstado) {
             if (/Comprar/.test(entradaEstado.innerText)) {
@@ -93,7 +92,7 @@ const cck = {
     }
   },
 
-  guardarEventos: async eventos => {
+  async guardarEventos(eventos) {
     try {
       console.log("🐣 Guarrrrdando...");
 
@@ -107,17 +106,17 @@ const cck = {
     }
   },
 
-  fetchEventos: async () => {
+  async fetchEventos() {
     let datos = await db.ref("cck/dataEventos/eventos").once("value");
     return datos.val();
   },
 
-  fetchEvento: async id => {
+  async fetchEvento(id) {
     let datos = await db.ref(`cck/dataEventos/eventos/${id}`).once("value");
     return datos.val();
   },
 
-  guardarReserva: async evento => {
+  async guardarReserva(evento) {
     console.log("🐣 Guarrrrdando...");
     try {
       await db.ref("/cck/reservasPendientes").push({ ...evento });
@@ -148,19 +147,102 @@ const cck = {
     }
   },
 
-  fetchReservasPendientes: async () => {
+  async fetchReservasPendientes() {
     let reservasPendientes = await db
       .ref("cck/reservasPendientes")
       .once("value");
     return reservasPendientes.val();
   },
 
-  reservarEntradas: async () => {
-    let reservasPendientes = this.fetchReservasPendientes();
-    console.log(reservasPendientes);
+  async reservarEntradasAgendadas() {
+    try {
+      let reservasPendientes = await this.fetchReservasPendientes();
+      let keys = Object.keys(reservasPendientes);
+      let arrEventos = [];
+      for (let key of keys) {
+        reservasPendientes[key].id = key;
+        arrEventos.push(reservasPendientes[key]);
+      }
+      for (let evento of arrEventos) {
+        await this.init();
+        await this.reservarEntrada(evento);
+        console.log("🐣 Removiendo evento...");
+        await db.ref(`/cck/reservasPendientes/${evento.id}`).remove();
+        console.log("✅ Evento removido.");
+        await this.cerrar();
+      }
+    } catch (err) {
+      console.log("💩 ERROR!", err.message);
+    }
   },
 
-  cerrar: async () => {
+  async reservarEntrada(evento) {
+    try {
+      await this.encontrarLinkEvento(evento);
+      await page.waitForSelector("#c_personas");
+      console.log("✅ Página cargada.");
+
+      console.log("🐣 Eligiendo...");
+      let horario = await page.$eval(
+        "#c_horario option:last-of-type",
+        el => el.value
+      );
+      await page.select("#c_horario", horario);
+      await page.select("#c_personas", "2");
+      await page.click("#ticketReservationButton");
+      console.log("✅ Opciones elegidas.");
+      console.log("🐣 Ingresando datos...");
+      await page.waitForSelector("#inputEmail");
+      await page.type("#inputEmail", config.cck.email);
+      await page.type("input[type='password']", config.cck.password);
+      await page.click("#login-button");
+      console.log("✅ Datos ingresados.");
+      console.log("🐣 Terminando...");
+      await page.waitForSelector(
+        '.form-check-input[type="radio"]:first-of-type'
+      );
+      await page.click('.form-check-input[type="radio"]:first-of-type');
+      await page.click("#confirm-order-button");
+      await page.waitForNavigation({ waitUntil: "networkidle2" });
+      console.log("🍻 Reservado!");
+      return {
+        success: true
+      };
+    } catch (err) {
+      console.log("💩 ERROR!", err.message);
+      return {
+        success: false
+      };
+    }
+  },
+
+  async encontrarLinkEvento(evento) {
+    try {
+      await page.waitForSelector("#list-reservas > article");
+      console.log("✅ Página cargada.");
+      let link = await page.evaluate(({ nombre, fecha }) => {
+        let boxes = Array.from(
+          document.querySelectorAll("#list-reservas > article")
+        );
+
+        let matchedEvent = boxes.filter(
+          box =>
+            box.querySelector(".art-desc h3 a").innerText === nombre &&
+            box.querySelector(".art-desc > span").innerText === fecha
+        );
+        let link = matchedEvent[0]
+          .querySelector(".event-reservar a")
+          .getAttribute("href");
+        return link;
+      }, evento);
+      await page.goto(link);
+      console.log("🐣 Cargando...");
+    } catch (err) {
+      console.log("💩 ERROR!", err.message);
+    }
+  },
+
+  async cerrar() {
     try {
       browser.close();
     } catch (err) {

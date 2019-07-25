@@ -11,6 +11,7 @@ app.use(
 );
 app.use(express.json());
 
+// Funciones
 const scrapeAndSave = async () => {
   let eventos = [];
   await cck.init();
@@ -46,7 +47,14 @@ const syncReservasYEventos = async () => {
   console.log("🐣 Guarrrrdando...");
   cck.guardarEventos(nuevoArrEventos);
 };
+const reservarEntrada = async evento => {
+  await cck.init();
+  let result = await cck.reservarEntrada(evento);
+  await cck.cerrar();
+  return result;
+};
 
+// Headers
 app.use(function(req, res, next) {
   res.header("Access-Control-Allow-Origin", "*");
   res.header(
@@ -56,31 +64,44 @@ app.use(function(req, res, next) {
   next();
 });
 
+// Endpoints
 app.get("/", async (req, res) => {
   let eventos = await cck.fetchEventos();
   res.json(eventos);
 });
 
-app.post("/", async (req, res) => {
+app.post("/agendar", async (req, res) => {
   let evento = req.body;
-  console.log(evento);
   let result = await cck.guardarReserva(evento);
   res.json(result);
 });
 
-// scrapeAndSave();
-// syncReservasYEventos();
+app.post("/reservar", async (req, res) => {
+  let evento = req.body;
+  let result = await reservarEntrada(evento);
+  res.json(result);
+});
 
-const time = "01 12 * * 3";
+app.post("/comprar", (req, res) => {
+  res.json({ jaja: "pobre" });
+});
+
+// Manual
+scrapeAndSave();
+// syncReservasYEventos();
+// cck.reservarEntradasAgendadas();
+
+const time = "01 12 * * 2-4";
 
 cron.schedule(
   time,
   async () => {
     console.log("🐣 Running the cron!");
     try {
+      await cck.reservarEntradasAgendadas();
       await scrapeAndSave();
     } catch (err) {
-      console.log(err.message);
+      console.log("💩 ERROR!", err.message);
     }
   },
   {
