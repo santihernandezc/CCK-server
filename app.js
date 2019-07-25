@@ -110,7 +110,7 @@ cron.schedule(
     timezone: "America/Argentina/Buenos_Aires"
   }
 );
-let scrapeTime = "25 12 * * *";
+let scrapeTime = "30 12 * * *";
 
 cron.schedule(
   scrapeTime,
