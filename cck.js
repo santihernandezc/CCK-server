@@ -14,15 +14,14 @@ const cck = {
     try {
       console.log("🐣 Iniciando...");
       browser = await puppeteer.launch({
-        args: [
-          "--headless",
-          "--no-sandbox",
-          "--disable-setuid-sandbox",
-          "--disable-gpu",
-          "--disable-dev-shm-usage",
-          '--proxy-server="direct://"',
-          "--proxy-bypass-list=*"
-        ]
+        // Dev
+        headless: false
+        // Prod
+        // args: [
+        // "--headless",
+        // "--no-sandbox",
+        // "--disable-setuid-sandbox",
+        // ]
       });
       page = await browser.newPage();
       await page.setViewport({
@@ -133,6 +132,7 @@ const cck = {
   async cerrar() {
     try {
       browser.close();
+      console.log("✅ Navegador cerrado.");
     } catch (err) {
       console.log("💩 ERROR!", err.message);
     }
@@ -266,14 +266,8 @@ const cck = {
       await page.click("#confirm-order-button");
       await page.waitForNavigation({ waitUntil: "networkidle2" });
       console.log("🍻 Reservado!");
-      return {
-        success: true
-      };
     } catch (err) {
       console.log("💩 ERROR!", err.message);
-      return {
-        success: false
-      };
     }
   }
 };

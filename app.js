@@ -48,10 +48,8 @@ const syncReservasYEventos = async () => {
   cck.guardarEventos(nuevoArrEventos);
 };
 const reservarEntrada = async evento => {
-  await cck.init();
-  let result = await cck.reservarEntrada(evento);
+  await cck.reservarEntrada(evento);
   await cck.cerrar();
-  return result;
 };
 
 // Headers
@@ -78,7 +76,12 @@ app.post("/agendar", async (req, res) => {
 
 app.post("/reservar", async (req, res) => {
   let evento = req.body;
-  let result = await reservarEntrada(evento);
+  result = {
+    success: true,
+    message: "Intentando reservar..."
+  };
+  await cck.init();
+  reservarEntrada(evento);
   res.json(result);
 });
 
@@ -88,7 +91,7 @@ app.post("/comprar", (req, res) => {
 
 // Manual
 
-scrapeAndSave();
+// scrapeAndSave();
 // syncReservasYEventos();
 // cck.reservarEntradasAgendadas();
 
