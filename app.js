@@ -87,18 +87,33 @@ app.post("/comprar", (req, res) => {
 });
 
 // Manual
-scrapeAndSave();
+// scrapeAndSave();
 // syncReservasYEventos();
 // cck.reservarEntradasAgendadas();
 
-const time = "01 12 * * 2-4";
+const mainTime = "01 12 * * 2-4";
 
 cron.schedule(
-  time,
+  mainTime,
   async () => {
-    console.log("🐣 Running the cron!");
+    console.log("🐣 Reservas!");
     try {
       await cck.reservarEntradasAgendadas();
+    } catch (err) {
+      console.log("💩 ERROR!", err.message);
+    }
+  },
+  {
+    timezone: "America/Argentina/Buenos_Aires"
+  }
+);
+let scrapeTime = "1 12 * * *";
+
+cron.schedule(
+  scrapeTime,
+  async () => {
+    console.log("🐣 Scrappin' time!");
+    try {
       await scrapeAndSave();
     } catch (err) {
       console.log("💩 ERROR!", err.message);

@@ -158,18 +158,20 @@ const cck = {
     try {
       let reservasPendientes = await this.fetchReservasPendientes();
       let keys = Object.keys(reservasPendientes);
-      let arrEventos = [];
-      for (let key of keys) {
-        reservasPendientes[key].id = key;
-        arrEventos.push(reservasPendientes[key]);
-      }
-      for (let evento of arrEventos) {
-        await this.init();
-        await this.reservarEntrada(evento);
-        console.log("🐣 Removiendo evento...");
-        await db.ref(`/cck/reservasPendientes/${evento.id}`).remove();
-        console.log("✅ Evento removido.");
-        await this.cerrar();
+      if (keys.length > 0) {
+        let arrEventos = [];
+        for (let key of keys) {
+          reservasPendientes[key].id = key;
+          arrEventos.push(reservasPendientes[key]);
+        }
+        for (let evento of arrEventos) {
+          await this.init();
+          await this.reservarEntrada(evento);
+          console.log("🐣 Removiendo evento...");
+          await db.ref(`/cck/reservasPendientes/${evento.id}`).remove();
+          console.log("✅ Evento removido.");
+          await this.cerrar();
+        }
       }
     } catch (err) {
       console.log("💩 ERROR!", err.message);
