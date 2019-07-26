@@ -16,7 +16,8 @@ const scrapeAndSave = async () => {
   let eventos = [];
   await cck.init();
   eventos = await cck.scrapeEventos();
-  cck.guardarEventos(eventos);
+  await cck.guardarEventos(eventos);
+  await syncReservasYEventos();
   cck.cerrar();
 };
 const syncReservasYEventos = async () => {
@@ -45,7 +46,8 @@ const syncReservasYEventos = async () => {
     });
   }
   console.log("🐣 Guarrrrdando...");
-  cck.guardarEventos(nuevoArrEventos);
+  await cck.guardarEventos(nuevoArrEventos);
+  console.log("🍻 Sincronizado.");
 };
 const reservarEntrada = async evento => {
   await cck.reservarEntrada(evento);

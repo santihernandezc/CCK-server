@@ -15,9 +15,9 @@ const cck = {
       console.log("🐣 Iniciando...");
       browser = await puppeteer.launch({
         // Dev
-        // headless: false
+        headless: false
         // Prod
-        args: ["--headless", "--no-sandbox", "--disable-setuid-sandbox"]
+        // args: ["--headless", "--no-sandbox", "--disable-setuid-sandbox"]
       });
       page = await browser.newPage();
       await page.setViewport({
@@ -217,23 +217,29 @@ const cck = {
         }
         for (let evento of arrEventos) {
           await this.init();
-          await this.reservarEntrada(evento);
-          console.log("🐣 Removiendo evento pendiente...");
-          let reserva = await this.fetchReservaPendiente(evento.id);
-          await db.ref("/cck/reservas/reservadas").push({ ...reserva });
-          await db.ref(`/cck/reservas/pendientes/${evento.id}`).remove();
-          console.log("✅ Evento removido.");
-          console.log("🐣 Updateando...");
-          let eventoAUpdatear = await db
-            .ref(`cck/dataEventos/eventos/${evento.id}`)
-            .once("value");
-          let updates = {};
-          updates["/eventos/" + evento.id] = {
-            ...eventoAUpdatear,
-            estado: "reservado"
-          };
-          await db.ref(`/cck/dataEventos/eventos/${evento.id}`).update(updates);
-          console.log("✅ Evento actualizado.");
+          let reservado = await this.reservarEntrada(evento);
+          if (reservado) {
+            console.log("🐣 Removiendo evento pendiente...");
+            let reserva = await this.fetchReservaPendiente(evento.id);
+            await db.ref("/cck/reservas/reservadas").push({ ...reserva });
+            await db.ref(`/cck/reservas/pendientes/${evento.id}`).remove();
+            console.log("✅ Evento removido.");
+            console.log("🐣 Updateando...");
+            let eventoAUpdatear = await db
+              .ref(`cck/dataEventos/eventos/${evento.id}`)
+              .once("value");
+            let updates = {};
+            updates["/eventos/" + evento.id] = {
+              ...eventoAUpdatear,
+              estado: "reservado"
+            };
+            await db
+              .ref(`/cck/dataEventos/eventos/${evento.id}`)
+              .update(updates);
+            console.log("✅ Evento actualizado.");
+          } else {
+            console.log("💩 ERROR!", "No se pudo reservar");
+          }
 
           await this.cerrar();
         }
@@ -280,8 +286,10 @@ const cck = {
       };
       await db.ref("/cck/dataEventos").update(updates);
       console.log("🍻 Updateado!");
+      return true;
     } catch (err) {
       console.log("💩 ERROR!", err.message);
+      return false;
     }
   }
 };
