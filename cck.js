@@ -15,9 +15,9 @@ const cck = {
       console.log("🐣 Iniciando...");
       browser = await puppeteer.launch({
         // Dev
-        headless: false
+        // headless: false
         // Prod
-        // args: ["--headless", "--no-sandbox", "--disable-setuid-sandbox"]
+        args: ["--headless", "--no-sandbox", "--disable-setuid-sandbox"]
       });
       page = await browser.newPage();
       await page.setViewport({
