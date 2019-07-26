@@ -15,13 +15,9 @@ const cck = {
       console.log("🐣 Iniciando...");
       browser = await puppeteer.launch({
         // Dev
-        headless: false
+        // headless: false
         // Prod
-        // args: [
-        // "--headless",
-        // "--no-sandbox",
-        // "--disable-setuid-sandbox",
-        // ]
+        args: ["--headless", "--no-sandbox", "--disable-setuid-sandbox"]
       });
       page = await browser.newPage();
       await page.setViewport({
@@ -90,8 +86,7 @@ const cck = {
             href,
             fecha,
             entrada,
-            imagen,
-            reservado: false
+            imagen
           });
         }
         return arrEventos;
@@ -167,8 +162,8 @@ const cck = {
 
   //Reservas
 
-  async guardarReserva(evento) {
-    console.log("🐣 Guarrrrdando...");
+  async agendarReserva(evento) {
+    console.log("🐣 Agendando...");
     try {
       await db.ref("/cck/reservas/pendientes").push({ ...evento });
       console.log("🍻 Reserva guardada!");
@@ -181,20 +176,19 @@ const cck = {
       let updates = {};
       updates["/eventos/" + evento.id] = {
         ...eventoAUpdatear,
-        reservado: true
+        estado: "agendado"
       };
       await db.ref("/cck/dataEventos").update(updates);
       console.log("🍻 Updateado!");
       return {
-        guardado: true,
-        evento
+        evento: {
+          ...evento,
+          estado: "agendado"
+        }
       };
     } catch (err) {
       console.log("💩 ERROR!", err.message);
-      return {
-        guardado: false,
-        evento
-      };
+      return evento;
     }
   },
 
@@ -227,8 +221,20 @@ const cck = {
           console.log("🐣 Removiendo evento pendiente...");
           let reserva = await this.fetchReservaPendiente(evento.id);
           await db.ref("/cck/reservas/reservadas").push({ ...reserva });
-          await await db.ref(`/cck/reservas/pendientes/${evento.id}`).remove();
+          await db.ref(`/cck/reservas/pendientes/${evento.id}`).remove();
           console.log("✅ Evento removido.");
+          console.log("🐣 Updateando...");
+          let eventoAUpdatear = await db
+            .ref(`cck/dataEventos/eventos/${evento.id}`)
+            .once("value");
+          let updates = {};
+          updates["/eventos/" + evento.id] = {
+            ...eventoAUpdatear,
+            estado: "reservado"
+          };
+          await db.ref(`/cck/dataEventos/eventos/${evento.id}`).update(updates);
+          console.log("✅ Evento actualizado.");
+
           await this.cerrar();
         }
       }
@@ -266,6 +272,14 @@ const cck = {
       await page.click("#confirm-order-button");
       await page.waitForNavigation({ waitUntil: "networkidle2" });
       console.log("🍻 Reservado!");
+      console.log("🐣 Updateando...");
+      let updates = {};
+      updates["/eventos/" + evento.id] = {
+        ...eventoAUpdatear,
+        estado: "reservado"
+      };
+      await db.ref("/cck/dataEventos").update(updates);
+      console.log("🍻 Updateado!");
     } catch (err) {
       console.log("💩 ERROR!", err.message);
     }

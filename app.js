@@ -39,7 +39,7 @@ const syncReservasYEventos = async () => {
   for (let reserva of arrReservas) {
     nuevoArrEventos = arrEventos.map(evento => {
       if (reserva.nombre === evento.nombre && reserva.fecha === evento.fecha) {
-        return { ...evento, reservado: true };
+        return { ...evento, estado: "agendado" };
       }
       return evento;
     });
@@ -69,16 +69,17 @@ app.get("/", async (req, res) => {
 });
 
 app.post("/agendar", async (req, res) => {
-  let evento = req.body;
-  let result = await cck.guardarReserva(evento);
+  let evento = req.body.evento;
+  let result = await cck.agendarReserva(evento);
   res.json(result);
 });
 
 app.post("/reservar", async (req, res) => {
-  let evento = req.body;
+  let evento = req.body.evento;
   result = {
     success: true,
-    message: "Intentando reservar..."
+    message: "Intentando reservar...",
+    evento: { ...evento, estado: "reservado" }
   };
   await cck.init();
   reservarEntrada(evento);
@@ -86,7 +87,9 @@ app.post("/reservar", async (req, res) => {
 });
 
 app.post("/comprar", (req, res) => {
-  res.json({ jaja: "pobre" });
+  let evento = req.body.evento;
+
+  res.json({ jaja: "pobre", evento: { ...evento, estado: "comprado" } });
 });
 
 // Manual
