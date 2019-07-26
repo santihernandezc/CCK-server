@@ -3,6 +3,12 @@ const cron = require("node-cron");
 const express = require("express");
 const app = express();
 const bodyParser = require("body-parser");
+const webpush = require("web-push");
+const db = require("./config/db");
+
+let privateKey = "iCKuWWUXTHWpgFB5afN5AyZDVGnXmjtFjeXMHA_z0IY";
+let publicKey =
+  "BFE7GUyRtAmST40rSrpKGaHO3qYSauvwHp5JJH0P2dsmAuCDJJjiKw1PGnkiom9QtQwhUCVCMVYIq_fVjIhCFVM";
 
 app.use(
   bodyParser.urlencoded({
@@ -48,11 +54,42 @@ const syncReservasYEventos = async () => {
   console.log("🐣 Guarrrrdando...");
   await cck.guardarEventos(nuevoArrEventos);
   console.log("🍻 Sincronizado.");
+  let payload = {
+    title: "Eventos actualizados!",
+    content: "Hay nuevos eventos disponibles"
+  };
+  sendPushNotification(JSON.stringify(payload));
 };
 const reservarEntrada = async evento => {
   await cck.reservarEntrada(evento);
   await cck.cerrar();
 };
+
+const sendPushNotification = async payload => {
+  console.log("🐣 Mandando notificación...");
+  webpush.setVapidDetails(
+    "mailto:santiagohernandez.1997",
+    publicKey,
+    privateKey
+  );
+  let subscripciones = await db.ref("/cck/subscripciones").once("value");
+  subscripciones.forEach(sub => {
+    let pushConfig = {
+      endpoint: sub.val().endpoint,
+      keys: {
+        auth: sub.val().keys.auth,
+        p256dh: sub.val().keys.p256dh
+      }
+    };
+    webpush
+      .sendNotification(pushConfig, payload)
+      .catch(err => console.log(err));
+  });
+};
+
+sendPushNotification(
+  JSON.stringify({ title: "ninguno", content: "nada pasó" })
+);
 
 // Headers
 app.use(function(req, res, next) {
@@ -91,6 +128,11 @@ app.post("/reservar", async (req, res) => {
 app.post("/comprar", (req, res) => {
   let evento = req.body.evento;
 
+  res.json({ jaja: "pobre", evento: { ...evento, estado: "comprado" } });
+});
+app.post("/subscripciones", (req, res) => {
+  let evento = req.body;
+  console.log(evento);
   res.json({ jaja: "pobre", evento: { ...evento, estado: "comprado" } });
 });
 
