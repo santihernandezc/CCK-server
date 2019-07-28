@@ -141,6 +141,7 @@ app.post("/comprar", (req, res) => {
 app.post("/subscribir", (req, res) => {
   let subscripcion = req.body;
   cck.subscribir(subscripcion);
+  res.json({ success: true });
 });
 
 // Manual
