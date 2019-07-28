@@ -12,13 +12,15 @@ const cck = {
 
   async init() {
     try {
+      let opciones =
+        process.env.NODE_ENV === "production"
+          ? {
+              args: ["--headless", "--no-sandbox", "--disable-setuid-sandbox"]
+            }
+          : { headless: false };
+
       console.log("🐣 Iniciando...");
-      browser = await puppeteer.launch({
-        // Dev
-        // headless: false
-        // Prod
-        args: ["--headless", "--no-sandbox", "--disable-setuid-sandbox"]
-      });
+      browser = await puppeteer.launch(opciones);
       page = await browser.newPage();
       await page.setViewport({
         width: 1639,
@@ -28,14 +30,15 @@ const cck = {
       page.setUserAgent(
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/75.0.3770.142 Safari/537.36"
       );
-      // Más rápido
-      await page.setRequestInterception(true);
-      page.on("request", request => {
-        if (arrRequests.includes(request.resourceType())) request.abort();
-        else {
-          request.continue();
-        }
-      });
+      if (process.env.NODE_ENV === "production") {
+        await page.setRequestInterception(true);
+        page.on("request", request => {
+          if (arrRequests.includes(request.resourceType())) request.abort();
+          else {
+            request.continue();
+          }
+        });
+      }
       console.log("✅ Iniciado.");
 
       console.log("🐣 Cargando...");
@@ -120,7 +123,7 @@ const cck = {
       await page.goto(link);
       console.log("🐣 Cargando...");
     } catch (err) {
-      console.log("💩 ERROR!", err.message);
+      console.log("💩 ERROR ENCONTRANDO LINK!", err.message);
     }
   },
 
@@ -158,6 +161,12 @@ const cck = {
   async fetchEvento(id) {
     let datos = await db.ref(`cck/dataEventos/eventos/${id}`).once("value");
     return datos.val();
+  },
+
+  // Subscripciones
+
+  async getSubscripciones() {
+    return await db.ref("/cck/subscripciones").once("value");
   },
 
   //Reservas
@@ -288,9 +297,15 @@ const cck = {
       console.log("🍻 Updateado!");
       return true;
     } catch (err) {
-      console.log("💩 ERROR!", err.message);
+      console.log("💩 ERROR RESERVANDO!", err.message);
       return false;
     }
+  },
+
+  subscribir(subscripcion) {
+    console.log("🐣 Subscribiendo...");
+    db.ref("/cck/subscripciones").push(subscripcion);
+    console.log("🍻 Subscripto!");
   }
 };
 
