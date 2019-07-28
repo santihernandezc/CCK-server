@@ -146,6 +146,10 @@ app.post("/subscribir", (req, res) => {
 
 // Manual
 
+// sendPushNotification({
+//   title: "Notificación de prueba",
+//   content: `Esta es una notificación de prueba, sí que lo es!`
+// });
 // scrapeAndSave();
 // syncReservasYEventos();
 // cck.reservarEntradasAgendadas();
