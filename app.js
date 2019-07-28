@@ -150,7 +150,6 @@ app.post("/subscribir", (req, res) => {
 // cck.reservarEntradasAgendadas();
 
 // CRON!
-
 const mainTime = "01 12 * * 2-4";
 
 cron.schedule(
