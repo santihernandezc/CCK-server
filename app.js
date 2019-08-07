@@ -2,12 +2,9 @@ const cck = require("./cck");
 const cron = require("node-cron");
 const express = require("express");
 const app = express();
+const cckRoutes = require("./routes/cck");
 const bodyParser = require("body-parser");
-const webpush = require("web-push");
-
-let privateKey = "iCKuWWUXTHWpgFB5afN5AyZDVGnXmjtFjeXMHA_z0IY";
-let publicKey =
-  "BFE7GUyRtAmST40rSrpKGaHO3qYSauvwHp5JJH0P2dsmAuCDJJjiKw1PGnkiom9QtQwhUCVCMVYIq_fVjIhCFVM";
+const sendPushNotification = require("./functions/sendPushNotification");
 
 app.use(
   bodyParser.urlencoded({
@@ -59,44 +56,6 @@ const syncReservasYEventos = async () => {
   };
   sendPushNotification(payload);
 };
-const reservarEntrada = async evento => {
-  let reservado = await cck.reservarEntrada(evento);
-  await cck.cerrar();
-  let payload = reservado
-    ? {
-        title: "Evento reservado!",
-        content: `El evento "${evento.nombre}" reservado.`
-      }
-    : {
-        title: "Error reservando",
-        content: `No se pudo reservar el evento "${evento.nombre}"`
-      };
-  sendPushNotification(payload);
-};
-
-const sendPushNotification = async payload => {
-  console.log("🐣 Mandando notificación...");
-  payload = JSON.stringify(payload);
-  webpush.setVapidDetails(
-    "mailto:santiagohernandez.1997",
-    publicKey,
-    privateKey
-  );
-  let subscripciones = await cck.getSubscripciones();
-  subscripciones.forEach(sub => {
-    let pushConfig = {
-      endpoint: sub.val().endpoint,
-      keys: {
-        auth: sub.val().keys.auth,
-        p256dh: sub.val().keys.p256dh
-      }
-    };
-    webpush
-      .sendNotification(pushConfig, payload)
-      .then(console.log("✅ Notificación enviada."))
-      .catch(err => console.log(err));
-  });
-};
 
 // Headers
 app.use(function(req, res, next) {
@@ -108,48 +67,10 @@ app.use(function(req, res, next) {
   next();
 });
 
-// Endpoints
-app.get("/", async (req, res) => {
-  let eventos = await cck.fetchEventos();
-  res.json(eventos);
-});
-
-app.post("/agendar", async (req, res) => {
-  let evento = req.body.evento;
-  let result = await cck.agendarReserva(evento);
-  res.json(result);
-});
-
-app.post("/reservar", async (req, res) => {
-  let evento = req.body.evento;
-  response = {
-    success: true,
-    message: "Reservando...",
-    evento: { ...evento, estado: "reservado" }
-  };
-  console.log(evento);
-  res.json(response);
-  await cck.init();
-  reservarEntrada(evento);
-});
-
-app.post("/comprar", (req, res) => {
-  let evento = req.body.evento;
-  res.json({ jaja: "pobre", evento: { ...evento, estado: "comprado" } });
-});
-
-app.post("/subscribir", (req, res) => {
-  let subscripcion = req.body;
-  cck.subscribir(subscripcion);
-  res.json({ success: true });
-});
+// Routes
+app.use("/", cckRoutes);
 
 // Manual
-
-// sendPushNotification({
-//   title: "Notificación de prueba",
-//   content: `Esta es una notificación de prueba, sí que lo es!`
-// });
 // scrapeAndSave();
 // syncReservasYEventos();
 // cck.reservarEntradasAgendadas();
