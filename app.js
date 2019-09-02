@@ -74,6 +74,10 @@ app.use(function(req, res, next) {
 app.use("/", cckRoutes);
 
 app.post("/demo/:action", async (req, res) => {
+  res.header(
+    "Access-Control-Allow-Origin",
+    "https://santiagoh1997.github.io/CCK-demo/"
+  );
   let action = req.params.action;
   let evento = req.body.evento;
   response = {
