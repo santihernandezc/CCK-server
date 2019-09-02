@@ -60,7 +60,7 @@ const syncReservasYEventos = async () => {
 // Headers
 app.use(function(req, res, next) {
   var allowedOrigins = [
-    '"https://entradas-af26c.firebaseapp.com',
+    "https://entradas-af26c.firebaseapp.com",
     "https://santiagoh1997.github.io/CCK-demo/"
   ];
   var origin = req.headers.origin;
