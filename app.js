@@ -144,6 +144,30 @@ app.post("/subscribir", (req, res) => {
   res.json({ success: true });
 });
 
+app.post("/demo/:action", async (req, res) => {
+  let action = req.params.action;
+  let evento = req.body.evento;
+  response = {
+    success: true,
+    message: "Reservando...",
+    evento: { ...evento, estado: "reservado" }
+  };
+  switch (action) {
+    case "reservar":
+      response.evento.estado = "reservado";
+      break;
+    case "comprar":
+      response.evento.estado = "comprado";
+      break;
+    default:
+      response.evento.estado = "agendado";
+      break;
+  }
+  await setTimeout(() => {
+    res.json(response);
+  }, 500);
+});
+
 // Manual
 
 // sendPushNotification({
