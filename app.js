@@ -61,7 +61,7 @@ const syncReservasYEventos = async () => {
 app.use(function(req, res, next) {
   var allowedOrigins = [
     "https://entradas-af26c.firebaseapp.com",
-    "https://santiagoh1997.github.io/CCK-demo/"
+    "https://santiagoh1997.github.io"
   ];
   var origin = req.headers.origin;
   if (allowedOrigins.indexOf(origin) > -1) {
