@@ -59,10 +59,14 @@ const syncReservasYEventos = async () => {
 
 // Headers
 app.use(function(req, res, next) {
-  res.header(
-    "Access-Control-Allow-Origin",
-    "https://entradas-af26c.firebaseapp.com"
-  );
+  var allowedOrigins = [
+    '"https://entradas-af26c.firebaseapp.com',
+    "https://santiagoh1997.github.io/CCK-demo/"
+  ];
+  var origin = req.headers.origin;
+  if (allowedOrigins.indexOf(origin) > -1) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  }
   res.header(
     "Access-Control-Allow-Headers",
     "Origin, X-Requested-With, Content-Type, Accept"
@@ -74,10 +78,6 @@ app.use(function(req, res, next) {
 app.use("/", cckRoutes);
 
 app.post("/demo/:action", async (req, res) => {
-  res.header(
-    "Access-Control-Allow-Origin",
-    "https://santiagoh1997.github.io/CCK-demo/"
-  );
   let action = req.params.action;
   let evento = req.body.evento;
   response = {
