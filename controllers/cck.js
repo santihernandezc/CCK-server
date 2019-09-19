@@ -42,7 +42,7 @@ exports.postReservar = async (req, res) => {
 
 exports.postComprar = (req, res) => {
   let evento = req.body.evento;
-  res.json({ jaja: "pobre", evento: { ...evento, estado: "comprado" } });
+  res.json({ jaja: "no", evento: { ...evento, estado: "comprado" } });
 };
 
 exports.postSubscribir = (req, res) => {
